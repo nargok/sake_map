@@ -2,11 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("androidx.room")
 }
 
 android {
     namespace = "com.nargok.sakemap"
     compileSdk = 35
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 
     defaultConfig {
         applicationId = "com.nargok.sakemap"
@@ -49,6 +56,23 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+
+    // ULID
+    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0")
+
+    // DI
+    val hiltVersion = "2.56.2"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    ksp("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // DB
+    val roomVersion = "2.7.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
