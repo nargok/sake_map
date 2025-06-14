@@ -1,0 +1,13 @@
+package com.nargok.sakemap.utils
+
+import com.nargok.sakemap.data.DrinkType
+
+fun getDrinkTypeText(type: DrinkType): String {
+    return when (type) {
+        DrinkType.SAKE -> "日本酒"
+        DrinkType.BEER -> "ビール"
+        DrinkType.WHISKEY -> "ウイスキー"
+        DrinkType.SHOCHU -> "焼酎"
+        DrinkType.WINE -> "ワイン"
+    }
+}

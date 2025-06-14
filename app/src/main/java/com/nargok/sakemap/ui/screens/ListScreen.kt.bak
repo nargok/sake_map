@@ -21,8 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nargok.sakemap.domain.model.DrinkRecord
-import com.nargok.sakemap.domain.model.vo.DrinkType
+import com.nargok.sakemap.data.DrinkRecord
+import com.nargok.sakemap.data.DrinkType
+import com.nargok.sakemap.utils.getDrinkTypeText
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -260,15 +261,6 @@ fun SortBottomSheetContent(
     }
 }
 
-fun getDrinkTypeText(type: DrinkType): String {
-    return when (type) {
-        DrinkType.SAKE -> "日本酒"
-        DrinkType.BEER -> "ビール"
-        DrinkType.WHISKEY -> "ウイスキー"
-        DrinkType.SHOCHU -> "焼酎"
-        DrinkType.WINE -> "ワイン"
-    }
-}
 
 // Mock data for preview
 fun mockDrinkRecords(): List<DrinkRecord> {

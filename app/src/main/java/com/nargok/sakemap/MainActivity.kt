@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.nargok.sakemap.ui.screens.ListScreen
+import com.nargok.sakemap.ui.screens.SimpleRecordScreen
 import com.nargok.sakemap.ui.theme.SakemapTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SakemapTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
-                    ListScreen()
+                    SimpleRecordScreen()
                 }
             }
         }
