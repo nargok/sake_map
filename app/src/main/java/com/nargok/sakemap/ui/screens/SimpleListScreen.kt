@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -35,9 +34,7 @@ data class SimpleDrinkRecord(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleListScreen(
-    onNavigateToRecord: () -> Unit = {}
-) {
+fun SimpleListScreen() {
     val mockRecords = remember { mockSimpleDrinkRecords() }
 
     Column(
@@ -45,27 +42,13 @@ fun SimpleListScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Header with add button
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "お酒記録一覧",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            
-            FloatingActionButton(
-                onClick = onNavigateToRecord,
-                modifier = Modifier.size(56.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "新しい記録を追加")
-            }
-        }
+        // Header
+        Text(
+            text = "お酒記録一覧",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         // Records count
         Text(
