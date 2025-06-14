@@ -1,4 +1,4 @@
-package com.nargok.sakemap.ui.screens
+package com.nargok.sakemap.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,32 +22,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nargok.sakemap.presentation.viewmodel.RecordRegisterViewModel
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleRecordScreen() {
-    var drinkName by remember { mutableStateOf("") }
-    var selectedDrinkType by remember { mutableStateOf("") }
-    var selectedPrefecture by remember { mutableStateOf("") }
-    var rating by remember { mutableIntStateOf(0) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    var description by remember { mutableStateOf("") }
-    var showDrinkTypeDropdown by remember { mutableStateOf(false) }
-    var showPrefectureDropdown by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
-
-    val drinkTypes = listOf("日本酒", "ビール", "ウイスキー", "焼酎", "ワイン")
-    val prefectures = listOf(
-        "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-        "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-        "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-        "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-        "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-        "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-        "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
-    )
+fun SimpleRecordScreen(
+    viewModel: RecordRegisterViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -103,20 +88,24 @@ fun SimpleRecordScreen() {
 
         // Drink name input
         OutlinedTextField(
-            value = drinkName,
-            onValueChange = { drinkName = it },
+            value = uiState.drinkName,
+            onValueChange = viewModel::updateDrinkName,
             label = { Text("銘柄名") },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("例: 獺祭 純米大吟醸") }
+            placeholder = { Text("例: 獺祭 純米大吟醸") },
+            isError = uiState.drinkNameError != null,
+            supportingText = uiState.drinkNameError?.let { 
+                { Text(it, color = MaterialTheme.colorScheme.error) } 
+            }
         )
 
         // Drink type dropdown
         ExposedDropdownMenuBox(
-            expanded = showDrinkTypeDropdown,
-            onExpandedChange = { showDrinkTypeDropdown = it }
+            expanded = uiState.showDrinkTypeDropdown,
+            onExpandedChange = viewModel::setShowDrinkTypeDropdown
         ) {
             OutlinedTextField(
-                value = selectedDrinkType,
+                value = uiState.selectedDrinkType,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("お酒の種類") },
@@ -125,20 +114,21 @@ fun SimpleRecordScreen() {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor()
+                    .menuAnchor(),
+                isError = uiState.drinkTypeError != null,
+                supportingText = uiState.drinkTypeError?.let { 
+                    { Text(it, color = MaterialTheme.colorScheme.error) } 
+                }
             )
             
             ExposedDropdownMenu(
-                expanded = showDrinkTypeDropdown,
-                onDismissRequest = { showDrinkTypeDropdown = false }
+                expanded = uiState.showDrinkTypeDropdown,
+                onDismissRequest = { viewModel.setShowDrinkTypeDropdown(false) }
             ) {
-                drinkTypes.forEach { type ->
+                viewModel.getDrinkTypes().forEach { type ->
                     DropdownMenuItem(
                         text = { Text(type) },
-                        onClick = {
-                            selectedDrinkType = type
-                            showDrinkTypeDropdown = false
-                        }
+                        onClick = { viewModel.updateSelectedDrinkType(type) }
                     )
                 }
             }
@@ -146,11 +136,11 @@ fun SimpleRecordScreen() {
 
         // Prefecture dropdown
         ExposedDropdownMenuBox(
-            expanded = showPrefectureDropdown,
-            onExpandedChange = { showPrefectureDropdown = it }
+            expanded = uiState.showPrefectureDropdown,
+            onExpandedChange = viewModel::setShowPrefectureDropdown
         ) {
             OutlinedTextField(
-                value = selectedPrefecture,
+                value = uiState.selectedPrefecture,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("都道府県") },
@@ -159,20 +149,21 @@ fun SimpleRecordScreen() {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor()
+                    .menuAnchor(),
+                isError = uiState.prefectureError != null,
+                supportingText = uiState.prefectureError?.let { 
+                    { Text(it, color = MaterialTheme.colorScheme.error) } 
+                }
             )
             
             ExposedDropdownMenu(
-                expanded = showPrefectureDropdown,
-                onDismissRequest = { showPrefectureDropdown = false }
+                expanded = uiState.showPrefectureDropdown,
+                onDismissRequest = { viewModel.setShowPrefectureDropdown(false) }
             ) {
-                prefectures.forEach { prefecture ->
+                viewModel.getPrefectures().forEach { prefecture ->
                     DropdownMenuItem(
                         text = { Text(prefecture) },
-                        onClick = {
-                            selectedPrefecture = prefecture
-                            showPrefectureDropdown = false
-                        }
+                        onClick = { viewModel.updateSelectedPrefecture(prefecture) }
                     )
                 }
             }
@@ -192,27 +183,36 @@ fun SimpleRecordScreen() {
             ) {
                 repeat(5) { index ->
                     Icon(
-                        imageVector = if (index < rating) Icons.Filled.Star else Icons.Outlined.Star,
+                        imageVector = if (index < uiState.rating) Icons.Filled.Star else Icons.Outlined.Star,
                         contentDescription = "${index + 1}つ星",
-                        tint = if (index < rating) Color(0xFFFFD700) else MaterialTheme.colorScheme.outline,
+                        tint = if (index < uiState.rating) Color(0xFFFFD700) else MaterialTheme.colorScheme.outline,
                         modifier = Modifier
                             .size(32.dp)
                             .clickable {
-                                rating = index + 1
+                                viewModel.updateRating(index + 1)
                             }
                     )
                 }
+            }
+            
+            uiState.ratingError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
         }
 
         // Date picker
         OutlinedTextField(
-            value = selectedDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")),
+            value = uiState.selectedDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")),
             onValueChange = {},
             readOnly = true,
             label = { Text("飲んだ日付") },
             trailingIcon = {
-                IconButton(onClick = { showDatePicker = true }) {
+                IconButton(onClick = { viewModel.setShowDatePicker(true) }) {
                     Icon(Icons.Default.DateRange, contentDescription = "日付選択")
                 }
             },
@@ -221,12 +221,8 @@ fun SimpleRecordScreen() {
 
         // Memo field
         OutlinedTextField(
-            value = description,
-            onValueChange = { newValue ->
-                if (newValue.length <= 500) {
-                    description = newValue
-                }
-            },
+            value = uiState.description,
+            onValueChange = viewModel::updateDescription,
             label = { Text("メモ") },
             placeholder = { Text("味の感想、飲んだ場所、一緒に食べた料理など...") },
             modifier = Modifier.fillMaxWidth(),
@@ -234,8 +230,8 @@ fun SimpleRecordScreen() {
             maxLines = 5,
             supportingText = { 
                 Text(
-                    text = "${description.length}/500文字",
-                    color = if (description.length > 450) MaterialTheme.colorScheme.error 
+                    text = "${uiState.description.length}/500文字",
+                    color = if (uiState.description.length > 450) MaterialTheme.colorScheme.error 
                            else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -245,9 +241,7 @@ fun SimpleRecordScreen() {
 
         // Save button
         Button(
-            onClick = { 
-                // TODO: Save logic
-            },
+            onClick = viewModel::saveRecord,
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
@@ -258,13 +252,13 @@ fun SimpleRecordScreen() {
     }
 
     // Date picker dialog (placeholder)
-    if (showDatePicker) {
+    if (uiState.showDatePicker) {
         AlertDialog(
-            onDismissRequest = { showDatePicker = false },
+            onDismissRequest = { viewModel.setShowDatePicker(false) },
             title = { Text("日付を選択") },
             text = { Text("実際の実装では DatePickerDialog を使用します") },
             confirmButton = {
-                TextButton(onClick = { showDatePicker = false }) {
+                TextButton(onClick = { viewModel.setShowDatePicker(false) }) {
                     Text("OK")
                 }
             }
@@ -276,6 +270,7 @@ fun SimpleRecordScreen() {
 @Composable
 fun SimpleRecordScreenPreview() {
     MaterialTheme {
-        SimpleRecordScreen()
+        // Note: Preview won't work with ViewModel injection
+        // For preview, you would need to create a mock or use a different approach
     }
 }

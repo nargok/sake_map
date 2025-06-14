@@ -9,9 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.nargok.sakemap.ui.screens.SimpleListScreen
-import com.nargok.sakemap.ui.screens.SimpleMapScreen
-import com.nargok.sakemap.ui.screens.SimpleRecordScreen
+import com.nargok.sakemap.presentation.ui.screens.SimpleListScreen
+import com.nargok.sakemap.presentation.ui.screens.SimpleMapScreen
+import com.nargok.sakemap.presentation.ui.screens.SimpleRecordScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

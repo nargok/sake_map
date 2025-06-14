@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.nargok.sakemap.navigation.SakeMapNavigation
-import com.nargok.sakemap.ui.theme.SakemapTheme
+import com.nargok.sakemap.presentation.ui.theme.SakemapTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 

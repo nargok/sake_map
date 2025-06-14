@@ -1,4 +1,4 @@
-package com.nargok.sakemap.ui.screens
+package com.nargok.sakemap.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

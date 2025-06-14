@@ -1,4 +1,4 @@
-package com.nargok.sakemap.ui.theme
+package com.nargok.sakemap.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

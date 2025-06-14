@@ -1,4 +1,4 @@
-package com.nargok.sakemap.ui.theme
+package com.nargok.sakemap.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
