@@ -12,5 +12,6 @@ data class DrinkRecord(
     val rating: Int,                    // 評価（1-5）
     val photoPath: String?,             // 写真パス
     val drinkDate: LocalDate,           // 飲んだ日付
+    val description: String?,           // 説明
     val createdAt: LocalDateTime = LocalDateTime.now()
 )

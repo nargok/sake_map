@@ -17,5 +17,6 @@ data class DrinkRecordEntity(
     val rating: Int,
     val photoPath: String?,
     val drinkDate: LocalDate,
+    val description: String?,
     val createdAt: LocalDateTime = LocalDateTime.now(),
 )

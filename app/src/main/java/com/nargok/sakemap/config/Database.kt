@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.nargok.sakemap.data.db.dao.DrinkRecordDao
 import com.nargok.sakemap.data.db.entity.DrinkRecordEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter
 )
 @TypeConverters(DateConverter::class, DateTimeConverter::class)
 abstract class SakeMapDatabase : RoomDatabase() {
+    abstract fun drinkRecordDao(): DrinkRecordDao
 
     companion object {
         const val DATABASE_NAME = "sake_map_database"
