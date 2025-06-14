@@ -9,9 +9,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DrinkRecordImpl @Inject constructor(
+class DrinkRecordRepositoryImpl @Inject constructor(
     private val drinkEffortDao: DrinkRecordDao
 ) : DrinkRecordRepository {
+
     override fun search(): List<DrinkRecord> {
         return drinkEffortDao.getDrinkRecords().map { it.toModel() }
     }

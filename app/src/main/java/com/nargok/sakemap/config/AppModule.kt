@@ -9,6 +9,8 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.nargok.sakemap.BuildConfig
 import com.nargok.sakemap.data.db.dao.DrinkRecordDao
+import com.nargok.sakemap.domain.repository.DrinkRecordRepository
+import com.nargok.sakemap.infrastructure.DrinkRecordRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,4 +38,9 @@ object AppModule {
         return db.drinkRecordDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideDrinkRecordRepository(dao: DrinkRecordDao): DrinkRecordRepository {
+        return DrinkRecordRepositoryImpl(dao)
+    }
 }
