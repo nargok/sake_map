@@ -67,6 +67,9 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
     // DB
     val roomVersion = "2.7.1"
     implementation("androidx.room:room-runtime:$roomVersion")

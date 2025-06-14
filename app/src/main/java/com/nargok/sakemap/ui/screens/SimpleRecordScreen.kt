@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
@@ -27,7 +28,9 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleRecordScreen() {
+fun SimpleRecordScreen(
+    onNavigateBack: () -> Unit = {}
+) {
     var drinkName by remember { mutableStateOf("") }
     var selectedDrinkType by remember { mutableStateOf("") }
     var selectedPrefecture by remember { mutableStateOf("") }
@@ -56,12 +59,24 @@ fun SimpleRecordScreen() {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header
-        Text(
-            text = "お酒を記録",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
+        // Header with back button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "戻る"
+                )
+            }
+            Text(
+                text = "お酒を記録",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
 
         // Photo capture area
         Box(
@@ -247,6 +262,7 @@ fun SimpleRecordScreen() {
         Button(
             onClick = { 
                 // TODO: Save logic
+                onNavigateBack()
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
