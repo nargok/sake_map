@@ -212,6 +212,33 @@ fun mockSimpleDrinkRecords(): List<SimpleDrinkRecord> {
             rating = 5,
             drinkDate = LocalDate.of(2023, 10, 15),
             memo = "エレガントで複雑な味わい。特別な夜に。"
+        ),
+        SimpleDrinkRecord(
+            id = "6",
+            name = "グレイグース",
+            type = "ウォッカ",
+            prefecture = "東京都",
+            rating = 4,
+            drinkDate = LocalDate.of(2023, 9, 10),
+            memo = "クリアでスムースな味わい。カクテルベースに最適。"
+        ),
+        SimpleDrinkRecord(
+            id = "7",
+            name = "ボンベイ・サファイア",
+            type = "ジン",
+            prefecture = "神奈川県",
+            rating = 4,
+            drinkDate = LocalDate.of(2023, 8, 5),
+            memo = "ボタニカルな香りが特徴的。ジントニックで楽しんだ。"
+        ),
+        SimpleDrinkRecord(
+            id = "8",
+            name = "バカルディ",
+            type = "ラム",
+            prefecture = "沖縄県",
+            rating = 3,
+            drinkDate = LocalDate.of(2023, 7, 20),
+            memo = "軽やかで飲みやすい。夏のパーティーで。"
         )
     )
 }

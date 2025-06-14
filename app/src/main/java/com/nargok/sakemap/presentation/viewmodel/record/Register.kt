@@ -1,4 +1,4 @@
-package com.nargok.sakemap.presentation.viewmodel
+package com.nargok.sakemap.presentation.viewmodel.record
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +34,10 @@ class RecordRegisterViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(RecordRegisterUiState())
     val uiState: StateFlow<RecordRegisterUiState> = _uiState.asStateFlow()
 
-    private val drinkTypes = listOf("日本酒", "ビール", "ウイスキー", "焼酎", "ワイン")
+    private val drinkTypes = listOf(
+        "日本酒", "ビール", "ウイスキー", "焼酎", "ワイン",
+        "ウォッカ", "ジン", "ラム", "リキュール"
+    )
     private val prefectures = listOf(
         "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
         "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
