@@ -1,5 +1,6 @@
-package com.nargok.sakemap.data
+package com.nargok.sakemap.domain.model
 
+import com.nargok.sakemap.domain.model.vo.DrinkType
 import java.time.LocalDate
 import java.time.LocalDateTime
 

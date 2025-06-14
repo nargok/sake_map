@@ -21,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nargok.sakemap.data.DrinkRecord
-import com.nargok.sakemap.data.DrinkType
+import com.nargok.sakemap.domain.model.DrinkRecord
+import com.nargok.sakemap.domain.model.vo.DrinkType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
