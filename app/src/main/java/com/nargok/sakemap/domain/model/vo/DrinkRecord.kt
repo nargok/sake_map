@@ -1,4 +1,4 @@
-package com.nargok.sakemap.domain.vo
+package com.nargok.sakemap.domain.model.vo
 
 enum class DrinkType {
     SAKE,
