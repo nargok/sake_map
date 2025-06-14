@@ -1,11 +1,12 @@
 package com.nargok.sakemap.domain.model
 
+import com.nargok.sakemap.domain.model.vo.DrinkRecordId
 import com.nargok.sakemap.domain.model.vo.DrinkType
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class DrinkRecord(
-    val id: String,
+data class DrinkRecord private constructor(
+    val id: DrinkRecordId,
     val name: String,                    // 銘柄名
     val type: DrinkType,                // お酒の種類
     val prefecture: String,             // 都道府県
@@ -14,4 +15,51 @@ data class DrinkRecord(
     val drinkDate: LocalDate,           // 飲んだ日付
     val description: String?,           // 説明
     val createdAt: LocalDateTime = LocalDateTime.now()
-)
+
+) {
+
+    companion object {
+        fun create(
+            name: String,
+            type: DrinkType,
+            prefecture: String,
+            rating: Int,
+        ): DrinkRecord {
+            return DrinkRecord(
+                id = DrinkRecordId.create(),
+                name = name,
+                type = type,
+                prefecture = prefecture,
+                rating = rating,
+                photoPath = null,
+                drinkDate = LocalDate.now(),
+                description = null
+            )
+        }
+
+        fun reconstruct(
+            id: DrinkRecordId,
+            name: String,
+            type: DrinkType,
+            prefecture: String,
+            rating: Int,
+            photoPath: String?,
+            drinkDate: LocalDate,
+            description: String?,
+            createdAt: LocalDateTime,
+        ): DrinkRecord {
+            return DrinkRecord(
+                id = id,
+                name = name,
+                type = type,
+                prefecture = prefecture,
+                rating = rating,
+                photoPath = photoPath,
+                drinkDate = drinkDate,
+                description = description,
+                createdAt = createdAt,
+            )
+        }
+    }
+
+}
