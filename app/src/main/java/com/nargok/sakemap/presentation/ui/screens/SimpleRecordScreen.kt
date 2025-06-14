@@ -206,18 +206,24 @@ fun SimpleRecordScreen(
         }
 
         // Date picker
-        OutlinedTextField(
-            value = uiState.selectedDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")),
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("飲んだ日付") },
-            trailingIcon = {
-                IconButton(onClick = { viewModel.setShowDatePicker(true) }) {
-                    Icon(Icons.Default.DateRange, contentDescription = "日付選択")
+        Column {
+            OutlinedTextField(
+                value = uiState.selectedDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("飲んだ日付") },
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.setShowDatePicker(true) }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "日付選択")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isError = uiState.dateError != null,
+                supportingText = uiState.dateError?.let { 
+                    { Text(it, color = MaterialTheme.colorScheme.error) } 
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+            )
+        }
 
         // Memo field
         OutlinedTextField(
@@ -251,17 +257,50 @@ fun SimpleRecordScreen(
         }
     }
 
-    // Date picker dialog (placeholder)
+    // Date picker dialog
     if (uiState.showDatePicker) {
-        AlertDialog(
-            onDismissRequest = { viewModel.setShowDatePicker(false) },
-            title = { Text("日付を選択") },
-            text = { Text("実際の実装では DatePickerDialog を使用します") },
-            confirmButton = {
-                TextButton(onClick = { viewModel.setShowDatePicker(false) }) {
-                    Text("OK")
+        DatePickerDialog(
+            onDateSelected = { millis ->
+                millis?.let { viewModel.updateSelectedDateFromMillis(it) }
+                viewModel.setShowDatePicker(false)
+            },
+            onDismiss = { viewModel.setShowDatePicker(false) },
+            initialSelectedDateMillis = viewModel.getSelectedDateInMillis()
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialog(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit,
+    initialSelectedDateMillis: Long? = null
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialSelectedDateMillis
+    )
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis)
                 }
+            ) {
+                Text("OK")
             }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("キャンセル")
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState,
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

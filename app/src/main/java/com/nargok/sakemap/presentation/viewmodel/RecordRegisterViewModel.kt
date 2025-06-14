@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -22,7 +24,8 @@ data class RecordRegisterUiState(
     val drinkNameError: String? = null,
     val drinkTypeError: String? = null,
     val prefectureError: String? = null,
-    val ratingError: String? = null
+    val ratingError: String? = null,
+    val dateError: String? = null
 )
 
 @HiltViewModel
@@ -76,7 +79,19 @@ class RecordRegisterViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateSelectedDate(date: LocalDate) {
-        _uiState.value = _uiState.value.copy(selectedDate = date)
+        _uiState.value = _uiState.value.copy(
+            selectedDate = date,
+            dateError = validateDate(date)
+        )
+    }
+
+    fun updateSelectedDateFromMillis(millis: Long) {
+        val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+        updateSelectedDate(date)
+    }
+
+    fun getSelectedDateInMillis(): Long {
+        return _uiState.value.selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 
     fun updateDescription(description: String) {
@@ -125,24 +140,34 @@ class RecordRegisterViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    private fun validateDate(date: LocalDate): String? {
+        return when {
+            date.isAfter(LocalDate.now()) -> "未来の日付は選択できません"
+            else -> null
+        }
+    }
+
     private fun validateForm(
         drinkName: String,
         drinkType: String,
         prefecture: String,
         rating: Int
     ): Boolean {
+        val currentState = _uiState.value
         val nameError = validateDrinkName(drinkName)
         val typeError = if (drinkType.isEmpty()) "お酒の種類を選択してください" else null
         val prefError = if (prefecture.isEmpty()) "都道府県を選択してください" else null
         val ratingError = if (rating == 0) "評価を選択してください" else null
+        val dateError = validateDate(currentState.selectedDate)
 
         _uiState.value = _uiState.value.copy(
             drinkNameError = nameError,
             drinkTypeError = typeError,
             prefectureError = prefError,
-            ratingError = ratingError
+            ratingError = ratingError,
+            dateError = dateError
         )
 
-        return nameError == null && typeError == null && prefError == null && ratingError == null
+        return nameError == null && typeError == null && prefError == null && ratingError == null && dateError == null
     }
 }
