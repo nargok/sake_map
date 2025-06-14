@@ -33,6 +33,7 @@ fun SimpleRecordScreen() {
     var selectedPrefecture by remember { mutableStateOf("") }
     var rating by remember { mutableIntStateOf(0) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var description by remember { mutableStateOf("") }
     var showDrinkTypeDropdown by remember { mutableStateOf(false) }
     var showPrefectureDropdown by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -216,6 +217,28 @@ fun SimpleRecordScreen() {
                 }
             },
             modifier = Modifier.fillMaxWidth()
+        )
+
+        // Memo field
+        OutlinedTextField(
+            value = description,
+            onValueChange = { newValue ->
+                if (newValue.length <= 500) {
+                    description = newValue
+                }
+            },
+            label = { Text("メモ") },
+            placeholder = { Text("味の感想、飲んだ場所、一緒に食べた料理など...") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 3,
+            maxLines = 5,
+            supportingText = { 
+                Text(
+                    text = "${description.length}/500文字",
+                    color = if (description.length > 450) MaterialTheme.colorScheme.error 
+                           else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
