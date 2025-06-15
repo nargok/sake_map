@@ -33,14 +33,38 @@ fun SimpleRecordScreen(
     viewModel: RecordRegisterViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    // Show success message with Snackbar
+    LaunchedEffect(uiState.isSaveSuccessful) {
+        if (uiState.isSaveSuccessful) {
+            snackbarHostState.showSnackbar(
+                message = "お酒の記録が保存されました！",
+                duration = SnackbarDuration.Short
+            )
+            viewModel.clearSuccessMessage()
+        }
+    }
+
+    // Show error message with Snackbar
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { errorMessage ->
+            snackbarHostState.showSnackbar(
+                message = errorMessage,
+                duration = SnackbarDuration.Long
+            )
+            viewModel.clearErrorMessage()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
         // Header
         Text(
             text = "お酒を記録",
@@ -264,44 +288,13 @@ fun SimpleRecordScreen(
             }
         }
 
-        // Error message
-        uiState.errorMessage?.let { errorMessage ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Text(
-                    text = errorMessage,
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
         }
 
-        // Success message
-        if (uiState.isSaveSuccessful) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF4CAF50).copy(alpha = 0.1f)
-                )
-            ) {
-                Text(
-                    text = "お酒の記録が保存されました！",
-                    modifier = Modifier.padding(16.dp),
-                    color = Color(0xFF2E7D32),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            
-            LaunchedEffect(uiState.isSaveSuccessful) {
-                kotlinx.coroutines.delay(3000)
-                viewModel.clearSuccessMessage()
-            }
-        }
+        // Snackbar Host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
     // Date picker dialog
