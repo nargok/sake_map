@@ -1,5 +1,6 @@
 package com.nargok.sakemap.presentation.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,12 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import com.nargok.sakemap.domain.model.DrinkRecord
 import com.nargok.sakemap.presentation.viewmodel.record.DrinkRecordListViewModel
 import java.time.LocalDate
@@ -164,7 +168,7 @@ fun DrinkRecordItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Photo placeholder
+            // Photo or placeholder
             Box(
                 modifier = Modifier
                     .size(60.dp)
@@ -172,10 +176,19 @@ fun DrinkRecordItem(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "📷",
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                if (record.photoPath != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(record.photoPath.toUri()),
+                        contentDescription = "お酒の写真",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        text = "📷",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))

@@ -177,7 +177,7 @@ class RecordRegisterViewModel @Inject constructor(
                         type = drinkType,
                         prefecture = prefecture,
                         rating = currentState.rating,
-                        photoPath = currentState.selectedPhotoUri.toString(),
+                        photoPath = currentState.selectedPhotoUri?.toString()?.takeIf { it != "null" },
                         description = if (currentState.description.isBlank()) null else currentState.description,
                     )
 
