@@ -19,6 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nargok.sakemap.domain.model.DrinkRecord
+import com.nargok.sakemap.presentation.viewmodel.list.DrinkRecordListViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -34,38 +38,187 @@ data class SimpleDrinkRecord(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleListScreen() {
-    val mockRecords = remember { mockSimpleDrinkRecords() }
+fun SimpleListScreen(
+    viewModel: DrinkRecordListViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Header
-        Text(
-            text = "お酒記録一覧",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+    // Show error message with Snackbar
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { errorMessage ->
+            snackbarHostState.showSnackbar(
+                message = errorMessage,
+                duration = SnackbarDuration.Long
+            )
+            viewModel.clearErrorMessage()
+        }
+    }
 
-        // Records count
-        Text(
-            text = "${mockRecords.size}件の記録",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Records list
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            items(mockRecords) { record ->
-                SimpleDrinkRecordItem(
-                    record = record,
-                    onDelete = { /* TODO: Delete logic */ }
+            // Header
+            Text(
+                text = "お酒記録一覧",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Records count
+            Text(
+                text = "${uiState.drinkRecords.size}件の記録",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Loading indicator
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                // Records list
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(uiState.drinkRecords) { record ->
+                        DrinkRecordItem(
+                            record = record,
+                            onDelete = { viewModel.showDeleteDialog(record) }
+                        )
+                    }
+                }
+            }
+        }
+
+        // Snackbar Host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+
+    // Delete confirmation dialog
+    if (uiState.showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideDeleteDialog() },
+            title = { Text("削除確認") },
+            text = { Text("この記録を削除しますか？") },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.deleteRecord() }
+                ) {
+                    Text("削除")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { viewModel.hideDeleteDialog() }
+                ) {
+                    Text("キャンセル")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun DrinkRecordItem(
+    record: DrinkRecord,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Photo placeholder
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "📷",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Drink info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = record.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                
+                Text(
+                    text = "${record.type.displayName} • ${record.prefecture}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                // Rating stars
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    repeat(5) { index ->
+                        Icon(
+                            imageVector = if (index < record.rating) Icons.Filled.Star else Icons.Outlined.Star,
+                            contentDescription = null,
+                            tint = if (index < record.rating) Color(0xFFFFD700) else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                
+                Text(
+                    text = record.drinkDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                record.description?.let { description ->
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+
+            // Delete button
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "削除",
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -247,7 +400,39 @@ fun mockSimpleDrinkRecords(): List<SimpleDrinkRecord> {
 @Composable
 fun SimpleListScreenPreview() {
     MaterialTheme {
-        SimpleListScreen()
+        // Preview with mock data since we can't inject ViewModel
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "お酒記録一覧",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = "3件の記録",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(mockSimpleDrinkRecords().take(3)) { record ->
+                        SimpleDrinkRecordItem(
+                            record = record,
+                            onDelete = {}
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -2,16 +2,16 @@ package com.nargok.sakemap.domain.model.vo
 
 import de.huxhorn.sulky.ulid.ULID
 
-enum class DrinkType {
-    SAKE,       // 日本酒
-    BEER,       // ビール
-    WHISKEY,    // ウイスキー
-    SHOCHU,     // 焼酎
-    WINE,       // ワイン
-    VODKA,      // ウォッカ
-    GIN,        // ジン
-    RUM,        // ラム
-    LIQUEUR,    // リキュール
+enum class DrinkType(val displayName: String) {
+    SAKE("日本酒"),
+    BEER("ビール"),
+    WHISKEY("ウイスキー"),
+    SHOCHU("焼酎"),
+    WINE("ワイン"),
+    VODKA("ウォッカ"),
+    GIN("ジン"),
+    RUM("ラム"),
+    LIQUEUR("リキュール")
 }
 
 data class DrinkRecordId private constructor(val value: String) {
