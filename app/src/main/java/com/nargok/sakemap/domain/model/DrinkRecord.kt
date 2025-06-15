@@ -2,6 +2,7 @@ package com.nargok.sakemap.domain.model
 
 import com.nargok.sakemap.domain.model.vo.DrinkRecordId
 import com.nargok.sakemap.domain.model.vo.DrinkType
+import com.nargok.sakemap.domain.model.vo.Prefecture
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -9,7 +10,7 @@ data class DrinkRecord private constructor(
     val id: DrinkRecordId,
     val name: String,                    // 銘柄名
     val type: DrinkType,                // お酒の種類
-    val prefecture: String,             // 都道府県
+    val prefecture: Prefecture,             // 都道府県
     val rating: Int,                    // 評価（1-5）
     val photoPath: String?,             // 写真パス
     val drinkDate: LocalDate,           // 飲んだ日付
@@ -22,7 +23,7 @@ data class DrinkRecord private constructor(
         fun create(
             name: String,
             type: DrinkType,
-            prefecture: String,
+            prefecture: Prefecture,
             rating: Int,
             photoPath: String?,
             description: String?
@@ -43,7 +44,7 @@ data class DrinkRecord private constructor(
             id: DrinkRecordId,
             name: String,
             type: DrinkType,
-            prefecture: String,
+            prefecture: Prefecture,
             rating: Int,
             photoPath: String?,
             drinkDate: LocalDate,

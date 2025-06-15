@@ -175,7 +175,7 @@ fun DrinkRecordItem(
                 )
                 
                 Text(
-                    text = "${record.type.displayName} • ${record.prefecture}",
+                    text = "${record.type.displayName} • ${record.prefecture.kanji}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -4,6 +4,7 @@ import com.nargok.sakemap.data.db.dao.DrinkRecordDao
 import com.nargok.sakemap.data.db.entity.DrinkRecordEntity
 import com.nargok.sakemap.domain.model.DrinkRecord
 import com.nargok.sakemap.domain.model.vo.DrinkRecordId
+import com.nargok.sakemap.domain.model.vo.Prefecture
 import com.nargok.sakemap.domain.repository.DrinkRecordRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,7 +38,7 @@ private fun DrinkRecord.toEntity(): DrinkRecordEntity {
         id = id.value,
         name = name,
         type = type,
-        prefecture = prefecture,
+        prefecture = prefecture.isoCode,
         rating = rating,
         photoPath = photoPath,
         drinkDate = drinkDate,
@@ -51,7 +52,7 @@ private fun DrinkRecordEntity.toModel(): DrinkRecord {
         id = DrinkRecordId.reconstruct(id),
         name = name,
         type = type,
-        prefecture = prefecture,
+        prefecture = Prefecture.fromIsoCode(prefecture),
         rating = rating,
         photoPath = photoPath,
         drinkDate = drinkDate,

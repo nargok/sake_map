@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nargok.sakemap.domain.model.DrinkRecord
 import com.nargok.sakemap.domain.model.vo.DrinkType
+import com.nargok.sakemap.domain.model.vo.Prefecture
 import com.nargok.sakemap.domain.repository.DrinkRecordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,15 +50,7 @@ class RecordRegisterViewModel @Inject constructor(
         "日本酒", "ビール", "ウイスキー", "焼酎", "ワイン",
         "ウォッカ", "ジン", "ラム", "リキュール"
     )
-    private val prefectures = listOf(
-        "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-        "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-        "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-        "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-        "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-        "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-        "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
-    )
+    private val prefectures = Prefecture.entries.map { it.kanji }
 
     fun getDrinkTypes(): List<String> = drinkTypes
     fun getPrefectures(): List<String> = prefectures
@@ -154,12 +147,14 @@ class RecordRegisterViewModel @Inject constructor(
 
                     // Convert string drink type to enum
                     val drinkType = convertStringToDrinkType(currentState.selectedDrinkType)
+                    // Convert string prefecture to enum
+                    val prefecture = convertStringToPrefecture(currentState.selectedPrefecture)
                     
                     // Create DrinkRecord domain object
                     val drinkRecord = DrinkRecord.create(
                         name = currentState.drinkName,
                         type = drinkType,
-                        prefecture = currentState.selectedPrefecture,
+                        prefecture = prefecture,
                         rating = currentState.rating,
                         photoPath = null, // TODO: Add photo support later
                         description = if (currentState.description.isBlank()) null else currentState.description,
@@ -208,6 +203,11 @@ class RecordRegisterViewModel @Inject constructor(
             "リキュール" -> DrinkType.LIQUEUR
             else -> throw IllegalArgumentException("Unknown drink type: $drinkTypeString")
         }
+    }
+
+    private fun convertStringToPrefecture(prefectureString: String): Prefecture {
+        return Prefecture.entries.find { it.kanji == prefectureString }
+            ?: throw IllegalArgumentException("Unknown prefecture: $prefectureString")
     }
 
     private fun validateDrinkName(name: String): String? {

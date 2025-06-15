@@ -74,7 +74,7 @@ class DrinkRecordMapViewModel @Inject constructor(
             .groupBy { it.prefecture }
             .map { (prefecture, recordsList) ->
                 PrefectureStatistics(
-                    name = prefecture,
+                    name = prefecture.kanji,
                     count = recordsList.size
                 )
             }
@@ -93,7 +93,7 @@ class DrinkRecordMapViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val allRecords = repository.search()
-                val prefectureRecords = allRecords.filter { it.prefecture == prefecture }
+                val prefectureRecords = allRecords.filter { it.prefecture.kanji == prefecture }
                 
                 _uiState.value = _uiState.value.copy(
                     selectedPrefecture = prefecture,

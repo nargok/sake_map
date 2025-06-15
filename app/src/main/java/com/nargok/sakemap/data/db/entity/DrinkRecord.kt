@@ -3,6 +3,7 @@ package com.nargok.sakemap.data.db.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nargok.sakemap.domain.model.vo.DrinkType
+import com.nargok.sakemap.domain.model.vo.Prefecture
 import java.time.LocalDate
 import java.time.LocalDateTime
 
