@@ -24,6 +24,8 @@ data class DrinkRecord private constructor(
             type: DrinkType,
             prefecture: String,
             rating: Int,
+            photoPath: String?,
+            description: String?
         ): DrinkRecord {
             return DrinkRecord(
                 id = DrinkRecordId.create(),
@@ -31,9 +33,9 @@ data class DrinkRecord private constructor(
                 type = type,
                 prefecture = prefecture,
                 rating = rating,
-                photoPath = null,
+                photoPath = photoPath,
                 drinkDate = LocalDate.now(),
-                description = null
+                description = description
             )
         }
 

@@ -6,12 +6,12 @@ import com.nargok.sakemap.domain.model.DrinkRecord
  * お酒記録リポジトリ
  */
 interface DrinkRecordRepository {
-    fun search(): List<DrinkRecord>
+    suspend fun search(): List<DrinkRecord>
 
-    fun find(id: String): DrinkRecord?
+    suspend fun find(id: String): DrinkRecord?
 
-    fun delete(id: String)
+    suspend fun delete(id: String)
 
-    fun register(drinkRecord: DrinkRecord)
+    suspend fun register(drinkRecord: DrinkRecord)
 
 }

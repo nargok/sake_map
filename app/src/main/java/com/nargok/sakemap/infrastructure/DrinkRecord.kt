@@ -5,6 +5,8 @@ import com.nargok.sakemap.data.db.entity.DrinkRecordEntity
 import com.nargok.sakemap.domain.model.DrinkRecord
 import com.nargok.sakemap.domain.model.vo.DrinkRecordId
 import com.nargok.sakemap.domain.repository.DrinkRecordRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,18 +15,19 @@ class DrinkRecordRepositoryImpl @Inject constructor(
     private val drinkEffortDao: DrinkRecordDao
 ) : DrinkRecordRepository {
 
-    override fun search(): List<DrinkRecord> {
-        return drinkEffortDao.getDrinkRecords().map { it.toModel() }
+    override suspend fun search(): List<DrinkRecord> = withContext(Dispatchers.IO) {
+        drinkEffortDao.getDrinkRecords().map { it.toModel() }
     }
 
-    override fun find(id: String): DrinkRecord? =
+    override suspend fun find(id: String): DrinkRecord? = withContext(Dispatchers.IO) {
         drinkEffortDao.getDrinkRecord(id).let { it.toModel() }
+    }
 
-    override fun delete(id: String) {
+    override suspend fun delete(id: String) = withContext(Dispatchers.IO) {
         drinkEffortDao.deleteDrinkRecord(id)
     }
 
-    override fun register(drinkRecord: DrinkRecord) {
+    override suspend fun register(drinkRecord: DrinkRecord) = withContext(Dispatchers.IO) {
         drinkEffortDao.insertDrinkRecord(drinkRecord.toEntity())
     }
 }

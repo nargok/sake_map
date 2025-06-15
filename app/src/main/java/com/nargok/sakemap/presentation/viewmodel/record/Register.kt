@@ -1,9 +1,14 @@
 package com.nargok.sakemap.presentation.viewmodel.record
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.nargok.sakemap.domain.model.DrinkRecord
+import com.nargok.sakemap.domain.model.vo.DrinkType
+import com.nargok.sakemap.domain.repository.DrinkRecordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -20,6 +25,10 @@ data class RecordRegisterUiState(
     val showDrinkTypeDropdown: Boolean = false,
     val showPrefectureDropdown: Boolean = false,
     val showDatePicker: Boolean = false,
+    // Loading and error states
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val isSaveSuccessful: Boolean = false,
     // Validation errors
     val drinkNameError: String? = null,
     val drinkTypeError: String? = null,
@@ -29,7 +38,9 @@ data class RecordRegisterUiState(
 )
 
 @HiltViewModel
-class RecordRegisterViewModel @Inject constructor() : ViewModel() {
+class RecordRegisterViewModel @Inject constructor(
+    private val repository: DrinkRecordRepository
+) : ViewModel() {
     
     private val _uiState = MutableStateFlow(RecordRegisterUiState())
     val uiState: StateFlow<RecordRegisterUiState> = _uiState.asStateFlow()
@@ -115,6 +126,14 @@ class RecordRegisterViewModel @Inject constructor() : ViewModel() {
         _uiState.value = _uiState.value.copy(showDatePicker = show)
     }
 
+    fun clearErrorMessage() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
+    }
+
+    fun clearSuccessMessage() {
+        _uiState.value = _uiState.value.copy(isSaveSuccessful = false)
+    }
+
     fun saveRecord() {
         val currentState = _uiState.value
         val isValid = validateForm(
@@ -125,14 +144,70 @@ class RecordRegisterViewModel @Inject constructor() : ViewModel() {
         )
 
         if (isValid) {
-            // TODO: Save logic - call repository to save the record
-            // For now, just reset the form
-            resetForm()
+            viewModelScope.launch {
+                try {
+                    // Set loading state
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+
+                    // Convert string drink type to enum
+                    val drinkType = convertStringToDrinkType(currentState.selectedDrinkType)
+                    
+                    // Create DrinkRecord domain object
+                    val drinkRecord = DrinkRecord.create(
+                        name = currentState.drinkName,
+                        type = drinkType,
+                        prefecture = currentState.selectedPrefecture,
+                        rating = currentState.rating,
+                        photoPath = null, // TODO: Add photo support later
+                        description = if (currentState.description.isBlank()) null else currentState.description,
+                    )
+
+                    // Save using repository
+                    repository.register(drinkRecord)
+
+                    // Set success state and reset form
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isSaveSuccessful = true,
+                        errorMessage = null
+                    )
+                    
+                    // Reset form after successful save
+                    resetForm()
+                    
+                } catch (e: Exception) {
+                    // Handle error
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "保存に失敗しました",
+                        isSaveSuccessful = false
+                    )
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
     private fun resetForm() {
         _uiState.value = RecordRegisterUiState()
+    }
+
+    private fun convertStringToDrinkType(drinkTypeString: String): DrinkType {
+        return when (drinkTypeString) {
+            "日本酒" -> DrinkType.SAKE
+            "ビール" -> DrinkType.BEER
+            "ウイスキー" -> DrinkType.WHISKEY
+            "焼酎" -> DrinkType.SHOCHU
+            "ワイン" -> DrinkType.WINE
+            "ウォッカ" -> DrinkType.VODKA
+            "ジン" -> DrinkType.GIN
+            "ラム" -> DrinkType.RUM
+            "リキュール" -> DrinkType.LIQUEUR
+            else -> throw IllegalArgumentException("Unknown drink type: $drinkTypeString")
+        }
     }
 
     private fun validateDrinkName(name: String): String? {

@@ -249,11 +249,58 @@ fun SimpleRecordScreen(
         Button(
             onClick = viewModel::saveRecord,
             modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isLoading,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            Text("保存", style = MaterialTheme.typography.titleMedium)
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text("保存", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+
+        // Error message
+        uiState.errorMessage?.let { errorMessage ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Text(
+                    text = errorMessage,
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
+        // Success message
+        if (uiState.isSaveSuccessful) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF4CAF50).copy(alpha = 0.1f)
+                )
+            ) {
+                Text(
+                    text = "お酒の記録が保存されました！",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color(0xFF2E7D32),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            
+            LaunchedEffect(uiState.isSaveSuccessful) {
+                kotlinx.coroutines.delay(3000)
+                viewModel.clearSuccessMessage()
+            }
         }
     }
 
