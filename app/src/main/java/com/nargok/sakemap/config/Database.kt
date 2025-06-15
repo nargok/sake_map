@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
     entities = [
         DrinkRecordEntity::class,
     ],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(DateConverter::class, DateTimeConverter::class)
 abstract class SakeMapDatabase : RoomDatabase() {
