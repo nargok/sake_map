@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nargok.sakemap.domain.model.DrinkRecord
-import com.nargok.sakemap.presentation.viewmodel.list.DrinkRecordListViewModel
+import com.nargok.sakemap.presentation.viewmodel.record.DrinkRecordListViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
