@@ -66,6 +66,9 @@ dependencies {
 
     // ULID
     implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0")
+    
+    // Coil for image loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // DI
     val hiltVersion = "2.56.2"

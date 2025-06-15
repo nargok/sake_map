@@ -1,5 +1,6 @@
 package com.nargok.sakemap.presentation.viewmodel.record
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nargok.sakemap.domain.model.DrinkRecord
@@ -26,6 +27,9 @@ data class RecordRegisterUiState(
     val showDrinkTypeDropdown: Boolean = false,
     val showPrefectureDropdown: Boolean = false,
     val showDatePicker: Boolean = false,
+    // Photo related states
+    val selectedPhotoUri: Uri? = null,
+    val showPhotoPickerDialog: Boolean = false,
     // Loading and error states
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -42,7 +46,7 @@ data class RecordRegisterUiState(
 class RecordRegisterViewModel @Inject constructor(
     private val repository: DrinkRecordRepository
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow(RecordRegisterUiState())
     val uiState: StateFlow<RecordRegisterUiState> = _uiState.asStateFlow()
 
@@ -98,7 +102,8 @@ class RecordRegisterViewModel @Inject constructor(
     }
 
     fun getSelectedDateInMillis(): Long {
-        return _uiState.value.selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        return _uiState.value.selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+            .toEpochMilli()
     }
 
     fun updateDescription(description: String) {
@@ -127,6 +132,22 @@ class RecordRegisterViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isSaveSuccessful = false)
     }
 
+    fun showPhotoPickerDialog() {
+        _uiState.value = _uiState.value.copy(showPhotoPickerDialog = true)
+    }
+
+    fun hidePhotoPickerDialog() {
+        _uiState.value = _uiState.value.copy(showPhotoPickerDialog = false)
+    }
+
+    fun updateSelectedPhoto(uri: Uri?) {
+        _uiState.value = _uiState.value.copy(selectedPhotoUri = uri)
+    }
+
+    fun removeSelectedPhoto() {
+        _uiState.value = _uiState.value.copy(selectedPhotoUri = null)
+    }
+
     fun saveRecord() {
         val currentState = _uiState.value
         val isValid = validateForm(
@@ -149,14 +170,14 @@ class RecordRegisterViewModel @Inject constructor(
                     val drinkType = convertStringToDrinkType(currentState.selectedDrinkType)
                     // Convert string prefecture to enum
                     val prefecture = convertStringToPrefecture(currentState.selectedPrefecture)
-                    
+
                     // Create DrinkRecord domain object
                     val drinkRecord = DrinkRecord.create(
                         name = currentState.drinkName,
                         type = drinkType,
                         prefecture = prefecture,
                         rating = currentState.rating,
-                        photoPath = null, // TODO: Add photo support later
+                        photoPath = currentState.selectedPhotoUri.toString(),
                         description = if (currentState.description.isBlank()) null else currentState.description,
                     )
 
@@ -169,10 +190,10 @@ class RecordRegisterViewModel @Inject constructor(
                         isSaveSuccessful = true,
                         errorMessage = null
                     )
-                    
+
                     // Reset form after successful save
                     resetForm()
-                    
+
                 } catch (e: Exception) {
                     // Handle error
                     _uiState.value = _uiState.value.copy(

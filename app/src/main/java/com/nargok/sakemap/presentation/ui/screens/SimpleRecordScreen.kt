@@ -1,5 +1,11 @@
 package com.nargok.sakemap.presentation.ui.screens
 
+import android.Manifest
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,21 +16,30 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import com.nargok.sakemap.presentation.viewmodel.record.RecordRegisterViewModel
+import com.nargok.sakemap.presentation.ui.components.PhotoPickerDialog
+import java.io.File
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +49,45 @@ fun SimpleRecordScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    // Create a temporary file for camera capture
+    val tempImageFile = remember {
+        File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+    }
+    
+    val tempImageUri = remember {
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            tempImageFile
+        )
+    }
+
+    // Camera launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            viewModel.updateSelectedPhoto(tempImageUri)
+        }
+    }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { viewModel.updateSelectedPhoto(it) }
+    }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraLauncher.launch(tempImageUri)
+        }
+    }
 
     // Show success message with Snackbar
     LaunchedEffect(uiState.isSaveSuccessful) {
@@ -84,29 +138,61 @@ fun SimpleRecordScreen(
                     MaterialTheme.colorScheme.outline,
                     RoundedCornerShape(12.dp)
                 )
-                .clickable { },
+                .clickable { viewModel.showPhotoPickerDialog() },
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "カメラ",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(48.dp)
-                )
-                Text(
-                    text = "写真を撮影",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "タップしてカメラを起動",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (uiState.selectedPhotoUri != null) {
+                // Show selected photo
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(uiState.selectedPhotoUri),
+                        contentDescription = "選択された写真",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    
+                    // Remove photo button
+                    IconButton(
+                        onClick = { viewModel.removeSelectedPhoto() },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                RoundedCornerShape(50)
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "写真を削除",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            } else {
+                // Show photo picker placeholder
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "写真追加",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Text(
+                        text = "写真を追加",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "タップして写真を選択",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 
@@ -306,6 +392,21 @@ fun SimpleRecordScreen(
             },
             onDismiss = { viewModel.setShowDatePicker(false) },
             initialSelectedDateMillis = viewModel.getSelectedDateInMillis()
+        )
+    }
+
+    // Photo picker dialog
+    if (uiState.showPhotoPickerDialog) {
+        PhotoPickerDialog(
+            onDismiss = { viewModel.hidePhotoPickerDialog() },
+            onCameraSelected = {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            },
+            onGallerySelected = {
+                galleryLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
         )
     }
 }
