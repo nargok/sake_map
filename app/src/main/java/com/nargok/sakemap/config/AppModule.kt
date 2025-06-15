@@ -29,6 +29,8 @@ object AppModule {
             builder.fallbackToDestructiveMigration(false)
         }
 
+        builder.addMigrations(SakeMapDatabase.MIGRATION_2_3)
+
         return builder.build()
     }
 

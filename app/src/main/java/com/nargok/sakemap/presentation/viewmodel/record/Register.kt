@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 data class RecordRegisterUiState(
     val drinkName: String = "",
+    val manufacturer: String = "",
     val selectedDrinkType: String = "",
     val selectedPrefecture: String = "",
     val rating: Int = 0,
@@ -36,6 +37,7 @@ data class RecordRegisterUiState(
     val isSaveSuccessful: Boolean = false,
     // Validation errors
     val drinkNameError: String? = null,
+    val manufacturerError: String? = null,
     val drinkTypeError: String? = null,
     val prefectureError: String? = null,
     val ratingError: String? = null,
@@ -63,6 +65,13 @@ class RecordRegisterViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(
             drinkName = name,
             drinkNameError = validateDrinkName(name)
+        )
+    }
+
+    fun updateManufacturer(manufacturer: String) {
+        _uiState.value = _uiState.value.copy(
+            manufacturer = manufacturer,
+            manufacturerError = validateManufacturer(manufacturer)
         )
     }
 
@@ -174,6 +183,7 @@ class RecordRegisterViewModel @Inject constructor(
                     // Create DrinkRecord domain object
                     val drinkRecord = DrinkRecord.create(
                         name = currentState.drinkName,
+                        manufacturer = if (currentState.manufacturer.isBlank()) null else currentState.manufacturer,
                         type = drinkType,
                         prefecture = prefecture,
                         rating = currentState.rating,
@@ -235,6 +245,13 @@ class RecordRegisterViewModel @Inject constructor(
         return when {
             name.isBlank() -> "銘柄名を入力してください"
             name.length > 50 -> "銘柄名は50文字以内で入力してください"
+            else -> null
+        }
+    }
+
+    private fun validateManufacturer(manufacturer: String): String? {
+        return when {
+            manufacturer.length > 50 -> "製造元は50文字以内で入力してください"
             else -> null
         }
     }

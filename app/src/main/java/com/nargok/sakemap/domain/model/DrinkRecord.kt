@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 data class DrinkRecord private constructor(
     val id: DrinkRecordId,
     val name: String,                    // 銘柄名
+    val manufacturer: String?,           // 製造元
     val type: DrinkType,                // お酒の種類
     val prefecture: Prefecture,             // 都道府県
     val rating: Int,                    // 評価（1-5）
@@ -22,6 +23,7 @@ data class DrinkRecord private constructor(
     companion object {
         fun create(
             name: String,
+            manufacturer: String?,
             type: DrinkType,
             prefecture: Prefecture,
             rating: Int,
@@ -31,6 +33,7 @@ data class DrinkRecord private constructor(
             return DrinkRecord(
                 id = DrinkRecordId.create(),
                 name = name,
+                manufacturer = manufacturer,
                 type = type,
                 prefecture = prefecture,
                 rating = rating,
@@ -43,6 +46,7 @@ data class DrinkRecord private constructor(
         fun reconstruct(
             id: DrinkRecordId,
             name: String,
+            manufacturer: String?,
             type: DrinkType,
             prefecture: Prefecture,
             rating: Int,
@@ -54,6 +58,7 @@ data class DrinkRecord private constructor(
             return DrinkRecord(
                 id = id,
                 name = name,
+                manufacturer = manufacturer,
                 type = type,
                 prefecture = prefecture,
                 rating = rating,

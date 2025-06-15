@@ -206,7 +206,12 @@ fun DrinkRecordItem(
                 )
                 
                 Text(
-                    text = "${record.type.displayName} • ${record.prefecture.kanji}",
+                    text = buildString {
+                        if (record.manufacturer != null) {
+                            append("${record.manufacturer} • ")
+                        }
+                        append("${record.type.displayName} • ${record.prefecture.kanji}")
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 data class DrinkRecordEntity(
     @PrimaryKey val id: String,
     val name: String,
+    val manufacturer: String?,
     val type: DrinkType,
     val prefecture: String,
     val rating: Int,

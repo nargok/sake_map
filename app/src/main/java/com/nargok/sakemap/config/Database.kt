@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nargok.sakemap.data.db.dao.DrinkRecordDao
 import com.nargok.sakemap.data.db.entity.DrinkRecordEntity
 import java.time.LocalDate
@@ -14,7 +16,7 @@ import java.time.format.DateTimeFormatter
     entities = [
         DrinkRecordEntity::class,
     ],
-    version = 2,
+    version = 3,
 )
 @TypeConverters(DateConverter::class, DateTimeConverter::class)
 abstract class SakeMapDatabase : RoomDatabase() {
@@ -22,6 +24,12 @@ abstract class SakeMapDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "sake_map_database"
+        
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE drink_record ADD COLUMN manufacturer TEXT")
+            }
+        }
     }
 }
 

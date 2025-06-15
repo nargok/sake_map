@@ -209,6 +209,19 @@ fun SimpleRecordScreen(
             }
         )
 
+        // Manufacturer input
+        OutlinedTextField(
+            value = uiState.manufacturer,
+            onValueChange = viewModel::updateManufacturer,
+            label = { Text("製造元") },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("例: 旭酒造") },
+            isError = uiState.manufacturerError != null,
+            supportingText = uiState.manufacturerError?.let { 
+                { Text(it, color = MaterialTheme.colorScheme.error) } 
+            }
+        )
+
         // Drink type dropdown
         ExposedDropdownMenuBox(
             expanded = uiState.showDrinkTypeDropdown,

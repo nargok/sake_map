@@ -37,6 +37,7 @@ private fun DrinkRecord.toEntity(): DrinkRecordEntity {
     return DrinkRecordEntity(
         id = id.value,
         name = name,
+        manufacturer = manufacturer,
         type = type,
         prefecture = prefecture.isoCode,
         rating = rating,
@@ -51,6 +52,7 @@ private fun DrinkRecordEntity.toModel(): DrinkRecord {
     return DrinkRecord.reconstruct(
         id = DrinkRecordId.reconstruct(id),
         name = name,
+        manufacturer = manufacturer,
         type = type,
         prefecture = Prefecture.fromIsoCode(prefecture),
         rating = rating,
