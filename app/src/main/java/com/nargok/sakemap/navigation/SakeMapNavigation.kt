@@ -51,7 +51,7 @@ fun SakeMapNavigation(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.RECORD,
+            startDestination = NavRoutes.MAP,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(NavRoutes.RECORD) {
