@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nargok.sakemap.presentation.viewmodel.record.DrinkRecordMapViewModel
+import com.nargok.sakemap.presentation.ui.components.PrefectureMap
+import com.nargok.sakemap.presentation.ui.components.PrefectureDetailDialog
 
 @Composable
 fun SimpleMapScreen(
@@ -67,39 +69,30 @@ fun SimpleMapScreen(
                 }
             }
 
-        // Map placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            // Prefecture Map
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = "地図",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(64.dp)
-                )
-                Text(
-                    text = "制覇マップ表示",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "都道府県別の制覇状況を表示\n（開発中）",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    PrefectureMap(
+                        prefectureStatistics = uiState.prefectureStatistics,
+                        onPrefectureClick = { prefecture ->
+                            viewModel.showPrefectureDetail(prefecture)
+                        },
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
-        }
 
             // Statistics section
             Card(
@@ -180,6 +173,17 @@ fun SimpleMapScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+    }
+
+    // Prefecture Detail Dialog
+    if (uiState.showPrefectureDialog) {
+        uiState.selectedPrefecture?.let { prefecture ->
+            PrefectureDetailDialog(
+                prefecture = prefecture,
+                records = uiState.selectedPrefectureRecords,
+                onDismiss = { viewModel.hidePrefectureDetail() }
+            )
+        }
     }
 }
 

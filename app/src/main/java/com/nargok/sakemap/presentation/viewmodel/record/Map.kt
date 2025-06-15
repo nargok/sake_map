@@ -23,7 +23,10 @@ data class DrinkRecordMapUiState(
     val mostPopularPrefecture: PrefectureStatistics? = null,
     val prefectureStatistics: List<PrefectureStatistics> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val selectedPrefecture: String? = null,
+    val selectedPrefectureRecords: List<DrinkRecord> = emptyList(),
+    val showPrefectureDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -84,5 +87,32 @@ class DrinkRecordMapViewModel @Inject constructor(
 
     fun refreshStatistics() {
         loadStatistics()
+    }
+
+    fun showPrefectureDetail(prefecture: String) {
+        viewModelScope.launch {
+            try {
+                val allRecords = repository.search()
+                val prefectureRecords = allRecords.filter { it.prefecture == prefecture }
+                
+                _uiState.value = _uiState.value.copy(
+                    selectedPrefecture = prefecture,
+                    selectedPrefectureRecords = prefectureRecords,
+                    showPrefectureDialog = true
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "都道府県詳細の読み込みに失敗しました: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun hidePrefectureDetail() {
+        _uiState.value = _uiState.value.copy(
+            selectedPrefecture = null,
+            selectedPrefectureRecords = emptyList(),
+            showPrefectureDialog = false
+        )
     }
 }
