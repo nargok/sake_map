@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
@@ -61,13 +62,30 @@ fun SimpleListScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Header
-            Text(
-                text = "お酒記録一覧",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            // Header with refresh button
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "お酒記録一覧",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                IconButton(
+                    onClick = { viewModel.loadDrinkRecords() },
+                    enabled = !uiState.isLoading
+                ) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "更新"
+                    )
+                }
+            }
 
             // Records count
             Text(
@@ -407,12 +425,27 @@ fun SimpleListScreenPreview() {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "お酒記録一覧",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                // Header with refresh button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "お酒記録一覧",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    IconButton(onClick = {}) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "更新"
+                        )
+                    }
+                }
                 
                 Text(
                     text = "3件の記録",
