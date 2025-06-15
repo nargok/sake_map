@@ -109,17 +109,17 @@ fun PrefectureMapLegend() {
         LegendItem(
             color = MaterialTheme.colorScheme.surfaceVariant,
             textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            label = "未制覇 (0件)"
+            label = "未制覇"
         )
         LegendItem(
             color = Color(0xFF81C784), // Light blue-green
             textColor = MaterialTheme.colorScheme.onPrimary,
-            label = "少し制覇 (1-4件)"
+            label = "1-4件"
         )
         LegendItem(
             color = Color(0xFF1976D2), // Dark blue
             textColor = MaterialTheme.colorScheme.onPrimary,
-            label = "たくさん制覇 (5件以上)"
+            label = "5件以上"
         )
     }
 }
