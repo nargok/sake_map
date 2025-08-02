@@ -14,4 +14,6 @@ interface DrinkRecordRepository {
 
     suspend fun register(drinkRecord: DrinkRecord)
 
+    suspend fun update(drinkRecord: DrinkRecord)
+
 }

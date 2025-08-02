@@ -3,6 +3,7 @@ package com.nargok.sakemap.data.db.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.nargok.sakemap.data.db.entity.DrinkRecordEntity
 
 @Dao
@@ -18,4 +19,7 @@ interface DrinkRecordDao {
 
     @Insert
     suspend fun insertDrinkRecord(drinkRecord: DrinkRecordEntity)
+
+    @Update
+    suspend fun updateDrinkRecord(drinkRecord: DrinkRecordEntity)
 }

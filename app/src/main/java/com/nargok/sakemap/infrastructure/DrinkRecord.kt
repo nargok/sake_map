@@ -31,6 +31,10 @@ class DrinkRecordRepositoryImpl @Inject constructor(
     override suspend fun register(drinkRecord: DrinkRecord) = withContext(Dispatchers.IO) {
         drinkEffortDao.insertDrinkRecord(drinkRecord.toEntity())
     }
+
+    override suspend fun update(drinkRecord: DrinkRecord) = withContext(Dispatchers.IO) {
+        drinkEffortDao.updateDrinkRecord(drinkRecord.toEntity())
+    }
 }
 
 private fun DrinkRecord.toEntity(): DrinkRecordEntity {

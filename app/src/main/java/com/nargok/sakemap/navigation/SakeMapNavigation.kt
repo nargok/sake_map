@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.nargok.sakemap.presentation.ui.screens.SimpleEditScreen
 import com.nargok.sakemap.presentation.ui.screens.SimpleListScreen
 import com.nargok.sakemap.presentation.ui.screens.SimpleMapScreen
 import com.nargok.sakemap.presentation.ui.screens.SimpleRecordScreen
@@ -63,7 +64,19 @@ fun SakeMapNavigation(
             }
             
             composable(NavRoutes.LIST) {
-                SimpleListScreen()
+                SimpleListScreen(
+                    onNavigateToEdit = { recordId ->
+                        navController.navigate("${NavRoutes.EDIT}/$recordId")
+                    }
+                )
+            }
+            
+            composable("${NavRoutes.EDIT}/{recordId}") { backStackEntry ->
+                val recordId = backStackEntry.arguments?.getString("recordId") ?: ""
+                SimpleEditScreen(
+                    recordId = recordId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

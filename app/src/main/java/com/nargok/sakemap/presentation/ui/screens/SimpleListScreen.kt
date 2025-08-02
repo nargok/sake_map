@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -44,6 +45,7 @@ data class SimpleDrinkRecord(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleListScreen(
+    onNavigateToEdit: (String) -> Unit = {},
     viewModel: DrinkRecordListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,6 +117,7 @@ fun SimpleListScreen(
                     items(uiState.drinkRecords) { record ->
                         DrinkRecordItem(
                             record = record,
+                            onEdit = { onNavigateToEdit(record.id.value) },
                             onDelete = { viewModel.showDeleteDialog(record) }
                         )
                     }
@@ -156,6 +159,7 @@ fun SimpleListScreen(
 @Composable
 fun DrinkRecordItem(
     record: DrinkRecord,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
@@ -249,13 +253,22 @@ fun DrinkRecordItem(
                 }
             }
 
-            // Delete button
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "削除",
-                    tint = MaterialTheme.colorScheme.error
-                )
+            // Edit and Delete buttons
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "編集",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "削除",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
@@ -264,6 +277,7 @@ fun DrinkRecordItem(
 @Composable
 fun SimpleDrinkRecordItem(
     record: SimpleDrinkRecord,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
@@ -343,13 +357,22 @@ fun SimpleDrinkRecordItem(
                 }
             }
 
-            // Delete button
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "削除",
-                    tint = MaterialTheme.colorScheme.error
-                )
+            // Edit and Delete buttons
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "編集",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "削除",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
@@ -478,6 +501,7 @@ fun SimpleListScreenPreview() {
                     items(mockSimpleDrinkRecords().take(3)) { record ->
                         SimpleDrinkRecordItem(
                             record = record,
+                            onEdit = {},
                             onDelete = {}
                         )
                     }
@@ -501,6 +525,7 @@ fun SimpleDrinkRecordItemPreview() {
                 drinkDate = LocalDate.of(2024, 1, 15),
                 memo = "とても上品で華やかな香り。"
             ),
+            onEdit = {},
             onDelete = {}
         )
     }
